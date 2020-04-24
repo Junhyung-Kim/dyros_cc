@@ -112,7 +112,6 @@ void CustomController::computePlanner()
             }
 
             wkc_.walkingCompute(rd_);
-
             for(int i = 0; i < 12; i++)
             {
                 ControlVal_(i) = wkc_.desired_leg_q(i);
