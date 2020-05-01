@@ -7,6 +7,7 @@ class CustomController
 public:
     CustomController(DataContainer &dc,RobotData &rd);
     Eigen::VectorQd getControl();
+    Eigen::VectorQd getGravityControl();
 
     void taskCommandToCC(TaskCommand tc_);
     
@@ -34,4 +35,5 @@ public:
 
 private:
     Eigen::VectorQd ControlVal_;
+    Eigen::VectorQd ControlGravVal_;
 };
