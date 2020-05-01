@@ -4,7 +4,7 @@ CustomController::CustomController(DataContainer &dc, RobotData &rd) : dc_(dc), 
 {
     ControlVal_.setZero();
 
-    for(int i=0; i<1;i++)
+    for(int i=0; i<2;i++)
     {
       file[i].open(FILE_NAMES[i].c_str(),std::ios_base::out);
     }
@@ -127,7 +127,6 @@ void CustomController::computePlanner()
             }
 
             wkc_.walkingCompute(rd_);
-    
             for(int i = 0; i < 12; i++)
             {
                 ControlVal_(i) = wkc_.desired_leg_q(i);

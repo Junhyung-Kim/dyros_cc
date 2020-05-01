@@ -21,13 +21,14 @@ public:
     Walking_controller &wkc_;
     TaskCommand tc;
 
-    const std::string FILE_NAMES[1] =
+    const std::string FILE_NAMES[2] =
     {
         ///change this directory when you use this code on the other computer///
-        "/home/jhk/data/walking/0_tocabi_.txt",
+        "/home/dyros/data/walking/0_tocabi_.txt",
+        "/home/dyros/data/walking/1_tocabi_.txt",
     };
     
-    std::fstream file[1];
+    std::fstream file[2];
 
     bool command_init = false;
     std::chrono::high_resolution_clock::time_point t_begin;
