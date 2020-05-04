@@ -15,11 +15,6 @@ Eigen::VectorQd CustomController::getControl()
     return ControlVal_;
 }
 
-Eigen::VectorQd CustomController::getGravityControl()
-{
-    return ControlGravVal_;
-}
-
 void CustomController::taskCommandToCC(TaskCommand tc_)
 {
     tc = tc_;
@@ -58,17 +53,19 @@ void CustomController::computeSlow()
     {
         if(wkc_.contactMode == 1.0)
         {
-            wbc_.set_contact(rd_,1,1);
+           rd_.ee_[0].contact = 1.0;
+           rd_.ee_[1].contact = 1.0;
         }
         else if(wkc_.contactMode == 2.0)
         {
-            wbc_.set_contact(rd_,1,0);
+           rd_.ee_[0].contact = 1.0;
+           rd_.ee_[1].contact = 0.0;
         }
         else
         {
-            wbc_.set_contact(rd_,0,1);
+           rd_.ee_[0].contact = 0.0;
+           rd_.ee_[1].contact = 1.0;
         }
-        ControlGravVal_ = wbc_.gravity_compensation_torque(rd_);
     }
 }
 
@@ -105,7 +102,7 @@ void CustomController::computePlanner()
     //        file[0] << wkc_.PELV_trajectory_float.translation()(0)<<"\t"<< wkc_.PELV_trajectory_float.translation()(1)<<"\t"<< wkc_.PELV_trajectory_float.translation()(2)<<"\t"<< wkc_.LF_trajectory_float.translation()(0)<<"\t"<< wkc_.LF_trajectory_float.translation()(1)<<"\t"<< wkc_.LF_trajectory_float.translation()(2)<<"\t"<< wkc_.RF_trajectory_float.translation()(0)<<"\t"<< wkc_.RF_trajectory_float.translation()(1)<<"\t"<< wkc_.RF_trajectory_float.translation()(2)<<"\t"<<std::endl;
         //  file[0] << wkc_.foot_distance(1)<<"\t"<< wkc_.RF_float_current.translation()(0)<<"\t"<<wkc_.PELV_support_current.translation()(1)<<"\t"<<wkc_.PELV_support_current.translation()(2)<<"\t"<< wkc_.PELV_trajectory_float.translation()(0)<<"\t"<< wkc_.PELV_trajectory_float.translation()(1)<<"\t"<< wkc_.PELV_trajectory_float.translation()(2)<<"\t"<< wkc_.LF_trajectory_float.translation()(0)<<"\t"<< wkc_.LF_trajectory_float.translation()(1)<<"\t"<< wkc_.LF_trajectory_float.translation()(2)<<"\t"<< wkc_.RF_trajectory_float.translation()(0)<<"\t"<< wkc_.RF_trajectory_float.translation()(1)<<"\t"<< wkc_.RF_trajectory_float.translation()(2)<<"\t"<< wkc_.RF_trajectory_support.translation()(0)<<"\t"<< wkc_.RF_trajectory_support.translation()(1)<<"\t"<< wkc_.RF_trajectory_support.translation()(2)<<std::endl;
             file[0]<<wkc_.PELV_float_current.translation()(0)<<"\t"<<wkc_.PELV_float_current.translation()(1)<<"\t"<< wkc_.PELV_float_current.translation()(2)<<"\t"<<wkc_.LF_float_current.translation()(0)<<"\t"<<wkc_.LF_float_current.translation()(1)<<"\t"<<wkc_.LF_float_current.translation()(2)<<"\t"<<wkc_.RF_float_current.translation()(0)<<"\t"<<wkc_.RF_float_current.translation()(1)<<"\t"<<wkc_.RF_float_current.translation()(2)<<"\t"<< wkc_.PELV_trajectory_float.translation()(0)<<"\t"<< wkc_.PELV_trajectory_float.translation()(1)<<"\t"<< wkc_.PELV_trajectory_float.translation()(2)<<"\t"<< wkc_.LF_trajectory_float.translation()(0)<<"\t"<< wkc_.LF_trajectory_float.translation()(1)<<"\t"<< wkc_.LF_trajectory_float.translation()(2)<<"\t"<< wkc_.RF_trajectory_float.translation()(0)<<"\t"<< wkc_.RF_trajectory_float.translation()(1)<<"\t"<< wkc_.RF_trajectory_float.translation()(2)<<"\t"<<wkc_.foot_step(wkc_.current_step_num,0)<<"\t"<<wkc_.contactMode<<std::endl;
-    //    file[0]<<wkc_.desired_leg_q(0) <<"\t" <<rd_.q_(0)<<"\t"<<wkc_.desired_leg_q(1) <<"\t"<<rd_.q_(1)<<"\t"<<wkc_.desired_leg_q(2) <<"\t"<<rd_.q_(2)<<"\t"<<wkc_.desired_leg_q(3) <<"\t"<<rd_.q_(3)<<"\t"<<wkc_.desired_leg_q(4) <<"\t"<<rd_.q_(4)<<"\t"<<wkc_.desired_leg_q(5)<<"\t" <<rd_.q_(5)<<"\t"<<wkc_.walking_enable<<std::endl;
+     //   file[0]<<wkc_.desired_leg_q(0) <<"\t" <<rd_.q_(0)<<"\t"<<wkc_.desired_leg_q(1) <<"\t"<<rd_.q_(1)<<"\t"<<wkc_.desired_leg_q(2) <<"\t"<<rd_.q_(2)<<"\t"<<wkc_.desired_leg_q(3) <<"\t"<<rd_.q_(3)<<"\t"<<wkc_.desired_leg_q(4) <<"\t"<<rd_.q_(4)<<"\t"<<wkc_.desired_leg_q(5)<<"\t" <<rd_.q_(5)<<"\t"<<wkc_.walking_enable<<"\t"<<wkc_.contactMode<<std::endl;
             for(int i = 0; i < 12; i++)
             {
                 ControlVal_(i) = wkc_.desired_leg_q(i);
