@@ -35,5 +35,6 @@ public:
 
 private:
     Eigen::VectorQd ControlVal_;
-    Eigen::VectorQd ControlGravVal_;
+    Eigen::VectorQd TorqueGrav;
+    Eigen::VectorQd TorqueContact;
 };
