@@ -54,20 +54,20 @@ void CustomController::computeSlow()
 
         if(tc.walking_enable == 1.0)
         {
-if(wkc_.contactMode == 1.0)
+            if(wkc_.contactMode == 1.0)
             {
-            rd_.ee_[0].contact = 1.0;
-            rd_.ee_[1].contact = 1.0;
+               rd_.ee_[0].contact = 1.0;
+               rd_.ee_[1].contact = 1.0;
             }
             else if(wkc_.contactMode == 2.0)
             {
-            rd_.ee_[0].contact = 1.0;
-            rd_.ee_[1].contact = 0.0;
+               rd_.ee_[0].contact = 1.0;
+               rd_.ee_[1].contact = 0.0;
             }
             else
             {
-            rd_.ee_[0].contact = 0.0;
-            rd_.ee_[1].contact = 1.0;
+                rd_.ee_[0].contact = 0.0;
+                rd_.ee_[1].contact = 1.0;
             }
 
             Vector12d fc_redis;
@@ -98,7 +98,15 @@ if(wkc_.contactMode == 1.0)
             }        
             rd_.torque_grav_cc = TorqueGrav;
             file[0] << TorqueGrav(0)<<"\t"<< TorqueGrav(1)<<"\t"<< TorqueGrav(2)<<"\t"<< TorqueGrav(3)<<"\t"<< TorqueGrav(4)<<"\t"<< TorqueGrav(5)<<"\t"<< TorqueContact(0)<<"\t"<< TorqueContact(1)<<"\t"<< TorqueContact(2)<<"\t"<<TorqueContact(3)<<"\t"<< TorqueContact(4)<<"\t"<< TorqueContact(5)<<"\t"<<1<<std::endl; 
-        }    
+        } 
+        else if(tc.walking_enable == 3.0)
+        {
+            rd_.ee_[0].contact = 1.0;
+            rd_.ee_[1].contact = 1.0;
+
+            TorqueGrav = wbc_.gravity_compensation_torque(rd_);
+            rd_.torque_grav_cc = TorqueGrav;
+        }   
             
     }
 }
