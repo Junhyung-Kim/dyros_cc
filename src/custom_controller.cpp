@@ -51,50 +51,55 @@ void CustomController::computeSlow()
     }
     else if(tc.mode == 11)
     {
-        if(wkc_.contactMode == 1.0)
-        {
-           rd_.ee_[0].contact = 1.0;
-           rd_.ee_[1].contact = 1.0;
-        }
-        else if(wkc_.contactMode == 2.0)
-        {
-           rd_.ee_[0].contact = 1.0;
-           rd_.ee_[1].contact = 0.0;
-        }
-        else
-        {
-           rd_.ee_[0].contact = 0.0;
-           rd_.ee_[1].contact = 1.0;
-        }
 
-        Vector12d fc_redis;
-        double fc_ratio = 0.000;
-        fc_redis.setZero();
-        VectorQd torquegrav1;
-        wbc_.set_contact(rd_);
-        
-        TorqueGrav = wbc_.gravity_compensation_torque(rd_);
-        
-        if(wkc_.phaseChange)
+        if(tc.walking_enable == 1.0)
         {
-            wkc_.rate = DyrosMath::cubic(wkc_.walking_tick,wkc_.double2Single_pre, wkc_.double2Single,1,0,0,0);
-            TorqueContact = wbc_.contact_force_redistribution_torque_walking(rd_, TorqueGrav, fc_redis, fc_ratio, wkc_.rate, wkc_.foot_step(wkc_.current_step_num,6));
-            TorqueGrav = TorqueGrav + TorqueContact;
-        }
-        else
-        {
-            if(wkc_.contactMode == 1.0)
+if(wkc_.contactMode == 1.0)
             {
-                TorqueContact = wbc_.contact_force_redistribution_torque_walking(rd_, TorqueGrav, fc_redis, fc_ratio, 1.0, wkc_.foot_step(wkc_.current_step_num,6));
-                TorqueGrav = TorqueGrav + TorqueContact;    
+            rd_.ee_[0].contact = 1.0;
+            rd_.ee_[1].contact = 1.0;
+            }
+            else if(wkc_.contactMode == 2.0)
+            {
+            rd_.ee_[0].contact = 1.0;
+            rd_.ee_[1].contact = 0.0;
             }
             else
             {
-                TorqueGrav = TorqueGrav;
+            rd_.ee_[0].contact = 0.0;
+            rd_.ee_[1].contact = 1.0;
             }
-        }        
-        rd_.torque_grav_cc = TorqueGrav;
-        file[0] << TorqueGrav(0)<<"\t"<< TorqueGrav(1)<<"\t"<< TorqueGrav(2)<<"\t"<< TorqueGrav(3)<<"\t"<< TorqueGrav(4)<<"\t"<< TorqueGrav(5)<<"\t"<< TorqueContact(0)<<"\t"<< TorqueContact(1)<<"\t"<< TorqueContact(2)<<"\t"<<TorqueContact(3)<<"\t"<< TorqueContact(4)<<"\t"<< TorqueContact(5)<<"\t"<<1<<std::endl; 
+
+            Vector12d fc_redis;
+            double fc_ratio = 0.000;
+            fc_redis.setZero();
+            VectorQd torquegrav1;
+            wbc_.set_contact(rd_);
+            
+            TorqueGrav = wbc_.gravity_compensation_torque(rd_);
+            
+            if(wkc_.phaseChange)
+            {
+                wkc_.rate = DyrosMath::cubic(wkc_.walking_tick,wkc_.double2Single_pre, wkc_.double2Single,1,0,0,0);
+                TorqueContact = wbc_.contact_force_redistribution_torque_walking(rd_, TorqueGrav, fc_redis, fc_ratio, wkc_.rate, wkc_.foot_step(wkc_.current_step_num,6));
+                TorqueGrav = TorqueGrav + TorqueContact;
+            }
+            else
+            {
+                if(wkc_.contactMode == 1.0)
+                {
+                    TorqueContact = wbc_.contact_force_redistribution_torque_walking(rd_, TorqueGrav, fc_redis, fc_ratio, 1.0, wkc_.foot_step(wkc_.current_step_num,6));
+                    TorqueGrav = TorqueGrav + TorqueContact;    
+                }
+                else
+                {
+                    TorqueGrav = TorqueGrav;
+                }
+            }        
+            rd_.torque_grav_cc = TorqueGrav;
+            file[0] << TorqueGrav(0)<<"\t"<< TorqueGrav(1)<<"\t"<< TorqueGrav(2)<<"\t"<< TorqueGrav(3)<<"\t"<< TorqueGrav(4)<<"\t"<< TorqueGrav(5)<<"\t"<< TorqueContact(0)<<"\t"<< TorqueContact(1)<<"\t"<< TorqueContact(2)<<"\t"<<TorqueContact(3)<<"\t"<< TorqueContact(4)<<"\t"<< TorqueContact(5)<<"\t"<<1<<std::endl; 
+        }    
+            
     }
 }
 
@@ -129,9 +134,9 @@ void CustomController::computePlanner()
         
             wkc_.walkingCompute(rd_);
     //        file[0] << wkc_.PELV_trajectory_float.translation()(0)<<"\t"<< wkc_.PELV_trajectory_float.translation()(1)<<"\t"<< wkc_.PELV_trajectory_float.translation()(2)<<"\t"<< wkc_.LF_trajectory_float.translation()(0)<<"\t"<< wkc_.LF_trajectory_float.translation()(1)<<"\t"<< wkc_.LF_trajectory_float.translation()(2)<<"\t"<< wkc_.RF_trajectory_float.translation()(0)<<"\t"<< wkc_.RF_trajectory_float.translation()(1)<<"\t"<< wkc_.RF_trajectory_float.translation()(2)<<"\t"<<std::endl;
-        //  file[0] << wkc_.foot_distance(1)<<"\t"<< wkc_.RF_float_current.translation()(0)<<"\t"<<wkc_.PELV_support_current.translation()(1)<<"\t"<<wkc_.PELV_support_current.translation()(2)<<"\t"<< wkc_.PELV_trajectory_float.translation()(0)<<"\t"<< wkc_.PELV_trajectory_float.translation()(1)<<"\t"<< wkc_.PELV_trajectory_float.translation()(2)<<"\t"<< wkc_.LF_trajectory_float.translation()(0)<<"\t"<< wkc_.LF_trajectory_float.translation()(1)<<"\t"<< wkc_.LF_trajectory_float.translation()(2)<<"\t"<< wkc_.RF_trajectory_float.translation()(0)<<"\t"<< wkc_.RF_trajectory_float.translation()(1)<<"\t"<< wkc_.RF_trajectory_float.translation()(2)<<"\t"<< wkc_.RF_trajectory_support.translation()(0)<<"\t"<< wkc_.RF_trajectory_support.translation()(1)<<"\t"<< wkc_.RF_trajectory_support.translation()(2)<<std::endl;
-        //    file[0]<<wkc_.desired_leg_q(0) <<"\t" <<rd_.q_(0)<<"\t"<<wkc_.desired_leg_q(1) <<"\t"<<rd_.q_(1)<<"\t"<<wkc_.desired_leg_q(2) <<"\t"<<rd_.q_(2)<<"\t"<<wkc_.desired_leg_q(3) <<"\t"<<rd_.q_(3)<<"\t"<<wkc_.desired_leg_q(4) <<"\t"<<rd_.q_(4)<<"\t"<<wkc_.desired_leg_q(5)<<"\t" <<rd_.q_(5)<<"\t"<<wkc_.walking_enable<<"\t"<<wkc_.contactMode<<"\t"<<wkc_.spPhase<<std::endl;
-            file[1]<<wkc_.PELV_float_current.translation()(0)<<"\t"<<wkc_.PELV_float_current.translation()(1)<<"\t"<< wkc_.PELV_float_current.translation()(2)<<"\t"<<wkc_.LF_float_current.translation()(0)<<"\t"<<wkc_.LF_float_current.translation()(1)<<"\t"<<wkc_.LF_float_current.translation()(2)<<"\t"<<wkc_.RF_float_current.translation()(0)<<"\t"<<wkc_.RF_float_current.translation()(1)<<"\t"<<wkc_.RF_float_current.translation()(2)<<"\t"<< wkc_.PELV_trajectory_float.translation()(0)<<"\t"<< wkc_.PELV_trajectory_float.translation()(1)<<"\t"<< wkc_.PELV_trajectory_float.translation()(2)<<"\t"<< wkc_.LF_trajectory_float.translation()(0)<<"\t"<< wkc_.LF_trajectory_float.translation()(1)<<"\t"<< wkc_.LF_trajectory_float.translation()(2)<<"\t"<< wkc_.RF_trajectory_float.translation()(0)<<"\t"<< wkc_.RF_trajectory_float.translation()(1)<<"\t"<< wkc_.RF_trajectory_float.translation()(2)<<"\t"<<wkc_.foot_step(wkc_.current_step_num,0)<<"\t"<<wkc_.double2Single<<"\t"<<wkc_.phaseChange<<"\t" << wkc_.rate << "\t"<<TorqueContact(1)<<std::endl;
+        //  file[0] << wkc_.foot_distance(1)<<"\t"<< wkc_.RF_support_current.translation()(0)<<"\t"<<wkc_.PELV_support_current.translation()(1)<<"\t"<<wkc_.PELV_support_current.translation()(2)<<"\t"<< wkc_.PELV_trajectory_float.translation()(0)<<"\t"<< wkc_.PELV_trajectory_float.translation()(1)<<"\t"<< wkc_.PELV_trajectory_float.translation()(2)<<"\t"<< wkc_.LF_trajectory_float.translation()(0)<<"\t"<< wkc_.LF_trajectory_float.translation()(1)<<"\t"<< wkc_.LF_trajectory_float.translation()(2)<<"\t"<< wkc_.RF_trajectory_float.translation()(0)<<"\t"<< wkc_.RF_trajectory_float.translation()(1)<<"\t"<< wkc_.RF_trajectory_float.translation()(2)<<"\t"<< wkc_.RF_trajectory_support.translation()(0)<<"\t"<< wkc_.RF_trajectory_support.translation()(1)<<"\t"<< wkc_.RF_trajectory_support.translation()(2)<<std::endl;
+        //    file[0]<<wkc_.desired_leg_q(7) <<"\t" <<rd_.q_(0)<<"\t"<<wkc_.desired_leg_q(1) <<"\t"<<rd_.q_(1)<<"\t"<<wkc_.desired_leg_q(2) <<"\t"<<rd_.q_(2)<<"\t"<<wkc_.desired_leg_q(3) <<"\t"<<rd_.q_(3)<<"\t"<<wkc_.desired_leg_q(4) <<"\t"<<rd_.q_(4)<<"\t"<<wkc_.desired_leg_q(5)<<"\t" <<rd_.q_(5)<<std::endl;
+        //    file[1]<<wkc_.PELV_support_current.translation()(0)<<"\t"<<wkc_.PELV_support_current.translation()(1)<<"\t"<< wkc_.PELV_support_current.translation()(2)<<"\t"<<wkc_.LF_support_current.translation()(0)<<"\t"<<wkc_.LF_support_current.translation()(1)<<"\t"<<wkc_.LF_support_current.translation()(2)<<"\t"<<wkc_.RF_support_current.translation()(0)<<"\t"<<wkc_.RF_support_current.translation()(1)<<"\t"<<wkc_.RF_support_current.translation()(2)<<"\t"<< wkc_.PELV_trajectory_float.translation()(0)<<"\t"<< wkc_.PELV_trajectory_float.translation()(1)<<"\t"<< wkc_.PELV_trajectory_float.translation()(2)<<"\t"<< wkc_.LF_trajectory_float.translation()(0)<<"\t"<< wkc_.LF_trajectory_float.translation()(1)<<"\t"<< wkc_.LF_trajectory_float.translation()(2)<<"\t"<< wkc_.RF_trajectory_float.translation()(0)<<"\t"<< wkc_.RF_trajectory_float.translation()(1)<<"\t"<< wkc_.RF_trajectory_float.translation()(2)<<"\t"<<wkc_.foot_step(wkc_.current_step_num,0)<<"\t"<<wkc_.foot_step(wkc_.current_step_num,1)<<std::endl;
    
             for(int i = 0; i < 12; i++)
             {
