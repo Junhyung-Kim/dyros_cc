@@ -51,7 +51,6 @@ void CustomController::computeSlow()
     }
     else if(tc.mode == 11)
     {
-
         if(tc.walking_enable == 1.0)
         {
             if(wkc_.contactMode == 1.0)
@@ -78,7 +77,7 @@ void CustomController::computeSlow()
             
             TorqueGrav = wbc_.gravity_compensation_torque(rd_);
             
-            if(wkc_.phaseChange)
+ /*           if(wkc_.phaseChange)
             {
                 wkc_.rate = DyrosMath::cubic(wkc_.walking_tick,wkc_.double2Single_pre, wkc_.double2Single,1,0,0,0);
                 TorqueContact = wbc_.contact_force_redistribution_torque_walking(rd_, TorqueGrav, fc_redis, fc_ratio, wkc_.rate, wkc_.foot_step(wkc_.current_step_num,6));
@@ -95,7 +94,7 @@ void CustomController::computeSlow()
                 {
                     TorqueGrav = TorqueGrav;
                 }
-            }        
+            }        */
             rd_.torque_grav_cc = TorqueGrav;
             file[0] << TorqueGrav(0)<<"\t"<< TorqueGrav(1)<<"\t"<< TorqueGrav(2)<<"\t"<< TorqueGrav(3)<<"\t"<< TorqueGrav(4)<<"\t"<< TorqueGrav(5)<<"\t"<< TorqueContact(0)<<"\t"<< TorqueContact(1)<<"\t"<< TorqueContact(2)<<"\t"<<TorqueContact(3)<<"\t"<< TorqueContact(4)<<"\t"<< TorqueContact(5)<<"\t"<<1<<std::endl; 
         } 
