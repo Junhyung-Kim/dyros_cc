@@ -37,4 +37,7 @@ private:
     Eigen::VectorQd ControlVal_;
     Eigen::VectorQd TorqueGrav;
     Eigen::VectorQd TorqueContact;
+    Eigen::VectorQd TorqueContact_prev;
+    Eigen::VectorQd TorqueContact_notfilter;
+    bool filter_init;
 };
