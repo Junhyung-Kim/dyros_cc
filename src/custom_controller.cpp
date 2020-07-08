@@ -127,7 +127,7 @@ void CustomController::computeSlow()
 
             TorqueGrav = wbc_.gravity_compensation_torque(rd_);
             rd_.torque_grav_cc = TorqueGrav;
-        }   
+        } 
             
     }
 }
@@ -157,29 +157,36 @@ void CustomController::computePlanner()
                 cycle_count = 0;
                 command_init = false;
                 wkc_.setRobotStateInitialize();
-
-                wkc_.getUiWalkingParameter(walkingHz, tc.walking_enable, tc.ik_mode, tc.walking_pattern, tc.foot_step_dir, tc.target_x, tc.target_y, tc.target_z, tc.theta, tc.height, tc.step_length_x, tc.step_length_y, tc.dob, rd_);
+                wkc_.getUiWalkingParameter(walkingHz, tc.walking_enable, tc.ik_mode, tc.walking_pattern, tc.walking_pattern2, tc.foot_step_dir, tc.target_x, tc.target_y, tc.target_z, tc.theta, tc.height, tc.step_length_x, tc.step_length_y, tc.dob, tc.imu_walk, rd_);
                 t_begin = std::chrono::high_resolution_clock::now();
+                
+                for(int i = 12; i<MODEL_DOF; i++)
+                {
+                    wkc_.desired_init_leg_q(i) = rd_.q_(i);
+                }                
             }
 
             wkc_.walkingCompute(rd_);
+        //    file[0] << dc_.tocabi_.ZMP_ft(0) << "\t" <<  dc_.tocabi_.ZMP_ft(1) << "\t" << wkc_.com_refx(wkc_.walking_tick)<<"\t"<<wkc_.com_refy(wkc_.walking_tick)<<"\t"<<wkc_.PELV_trajectory_float.translation()(2)<<"\t"<<wkc_.PELV_trajectory_float.translation()(1)<<std::endl;
+        //    file[1] << dc_.tocabi_.ZMP(0) << "\t"<< dc_.tocabi_.ZMP(1) << "\t"<<dc_.tocabi_.com_.pos(0) << "\t"<< dc_.tocabi_.com_.pos(1) <<"\t" << dc_.tocabi_.link_[Pelvis].xpos(0) <<"\t"<<wkc_.debug<<std::endl;
+              file[0] << dc_.tocabi_.ZMP(0)<<"\t"<< wkc_.aa(0) << "\t" << wkc_.aa(1) << "\t" << wkc_.aa(2) << "\t" << wkc_.aa(3) << "\t" << wkc_.aa(4) << "\t" << wkc_.aa(5) << std::endl;
+
+        //           file[0] << dc_.tocabi_.ZMP(0)<<"\t"<< wkc_.aa(0) << "\t" << wkc_.aa(1) << "\t" << wkc_.aa(2) << "\t" << wkc_.aa(3) << "\t" << wkc_.aa(4) << "\t" << wkc_.aa(5) << std::endl;
+
+
        //  file[0] << wkc_.walking_tick<< "\t"<<wkc_.desired_leg_q(1)<< std::endl;
          //   file[0]<< wkc_.COM(1) <<"\t"<<wkc_.COM_support_current.translation()(1) << "\t"<<wkc_.com_support_temp(1) <<"\t" << wkc_.capturePoint_refy(wkc_.walking_tick) <<"\t" << wkc_.com_refy(wkc_.walking_tick) << std::endl;
          //   file[0] <<wkc_.desired_leg_q(0) <<"\t"<<rd_.q_(0)<<"\t"<<wkc_.desired_leg_q(1) <<"\t"<<rd_.q_(1)<<"\t"<<wkc_.desired_leg_q(2) <<"\t"<<rd_.q_(2)<<"\t"<<wkc_.desired_leg_q(3) <<"\t"<<rd_.q_(3)<<"\t"<<wkc_.desired_leg_q(4) <<"\t"<<rd_.q_(4)<<"\t"<<wkc_.desired_leg_q(5)<<"\t" <<rd_.q_(5)<<std::endl; 
          //    file[0] <<DyrosMath::rot2Euler((rd_.link_[Left_Foot].Rotm))(1)<<"\t"<<DyrosMath::rot2Euler((rd_.link_[Right_Foot].Rotm)/*.inverse() * rd_.link_[Left_Foot].Rotm*/)(1) <<"\t"<<DyrosMath::rot2Euler(rd_.link_[Right_Foot].Rotm)(0)<<"\t"<<DyrosMath::rot2Euler(rd_.link_[Left_Foot].Rotm)(0) <<"\t"<<DyrosMath::rot2Euler(rd_.link_[Right_Foot].Rotm)(1)<<"\t"<<wkc_.desired_leg_q(5) <<"\t"<<rd_.q_(5)<<"\t"<<wkc_.desired_leg_q(11) <<"\t"<<rd_.q_(11)<<"\t"<<wkc_.leg_q(5)<<"\t"<<wkc_.leg_q(11)<<"\t"<<wkc_.rot_vel(0,0)<<std::endl;
         // file[0]<<rd_.q_(11)<<"\t"<<rd_.q_(12) <<"\t"<<rd_.q_(13)<<"\t"<<rd_.q_(14) <<"\t"<<rd_.q_(15)<<"\t"<<rd_.q_(16) <<"\t"<<rd_.q_(17)<<"\t"<<rd_.q_(18) <<"\t"<<rd_.q_(19)<<"\t"<<rd_.q_(20)<<"\t" <<rd_.q_(21)<<std::endl; 
-         //   file[0] << wkc_.PELV_trajectory_float.translation()(0)<<"\t"<< wkc_.PELV_trajectory_float.translation()(1)<<"\t"<< wkc_.PELV_trajectory_float.translation()(2)<<"\t"<< wkc_.LF_trajectory_float.translation()(0)<<"\t"<< wkc_.LF_trajectory_float.translation()(1)<<"\t"<< wkc_.LF_trajectory_float.translation()(2)<<"\t"<< wkc_.RF_trajectory_float.translation()(0)<<"\t"<< wkc_.RF_trajectory_float.translation()(1)<<"\t"<< wkc_.RF_trajectory_float.translation()(2)<<"\t"<<std::endl;
-        //  file[0] << wkc_.foot_distance(1)<<"\t"<< wkc_.RF_support_current.translation()(0)<<"\t"<<wkc_.PELV_support_current.translation()(1)<<"\t"<<wkc_.PELV_support_current.translation()(2)<<"\t"<< wkc_.PELV_trajectory_float.translation()(0)<<"\t"<< wkc_.PELV_trajectory_float.translation()(1)<<"\t"<< wkc_.PELV_trajectory_float.translation()(2)<<"\t"<< wkc_.LF_trajectory_float.translation()(0)<<"\t"<< wkc_.LF_trajectory_float.translation()(1)<<"\t"<< wkc_.LF_trajectory_float.translation()(2)<<"\t"<< wkc_.RF_trajectory_float.translation()(0)<<"\t"<< wkc_.RF_trajectory_float.translation()(1)<<"\t"<< wkc_.RF_trajectory_float.translation()(2)<<"\t"<< wkc_.RF_trajectory_support.translation()(0)<<"\t"<< wkc_.RF_trajectory_support.translation()(1)<<"\t"<< wkc_.RF_trajectory_support.translation()(2)<<std::endl;
-//file[0]<<DyrosMath::rot2Euler(wkc_.COM_support_current.linear())(0)<<"\t"<<DyrosMath::rot2Euler(wkc_.COM_support_current.linear())(1)<<"\t"<< DyrosMath::rot2Euler(wkc_.COM_support_current.linear())(2)<<"\t"<<wkc_.LF_support_current.translation()(0)<<"\t"<<wkc_.LF_support_current.translation()(1)<<"\t"<<wkc_.LF_support_current.translation()(2)<<"\t"<<wkc_.RF_support_current.translation()(0)<<"\t"<<wkc_.RF_support_current.translation()(1)<<"\t"<<wkc_.RF_support_current.translation()(2)<<"\t"<< wkc_.PELV_trajectory_float.translation()(0)<<"\t"<< wkc_.PELV_trajectory_float.translation()(1)<<"\t"<< wkc_.PELV_trajectory_float.translation()(2)<<"\t"<< wkc_.LF_trajectory_float.translation()(0)<<"\t"<< wkc_.LF_trajectory_float.translation()(1)<<"\t"<< wkc_.LF_trajectory_float.translation()(2)<<"\t"<< wkc_.RF_trajectory_float.translation()(0)<<"\t"<< wkc_.RF_trajectory_float.translation()(1)<<"\t"<< wkc_.RF_trajectory_float.translation()(2)<<"\t"<<wkc_.foot_step(wkc_.current_step_num,0)<<"\t"<<wkc_.foot_step(wkc_.current_step_num,1)<<std::endl;
-   //
-   file[0] <<DyrosMath::rot2Euler((rd_.link_[Pelvis].Rotm))(0)<<"\t"<<DyrosMath::rot2Euler((rd_.link_[Pelvis].Rotm)/*.inverse() * rd_.link_[Left_Foot].Rotm*/)(1) <<"\t"<<DyrosMath::rot2Euler(rd_.link_[Right_Foot].Rotm)(0)<<std::endl;
-               for(int i = 0; i < 12; i++)
+
+            for(int i = 0; i < 12; i++)
             {
                 ControlVal_(i) = wkc_.desired_leg_q(i);
             }
             for(int i = 12; i<MODEL_DOF; i++)
             {
-                ControlVal_(i) = rd_.q_init_(i);
+                ControlVal_(i) = wkc_.desired_init_leg_q(i);
             }
         }
         else if(tc.walking_enable == 3.0)
@@ -189,7 +196,7 @@ void CustomController::computePlanner()
                 cycle_count = 0;
                 command_init = false;
                 wkc_.setRobotStateInitialize();
-                wkc_.getUiWalkingParameter(walkingHz, tc.walking_enable, tc.ik_mode, tc.walking_pattern, tc.foot_step_dir, tc.target_x, tc.target_y, tc.target_z, tc.theta, tc.height, tc.step_length_x, tc.step_length_y, tc.dob, rd_);
+                wkc_.getUiWalkingParameter(walkingHz, tc.walking_enable, tc.ik_mode, tc.walking_pattern, tc.walking_pattern2, tc.foot_step_dir, tc.target_x, tc.target_y, tc.target_z, tc.theta, tc.height, tc.step_length_x, tc.step_length_y, tc.dob, tc.imu_walk, rd_);
                 t_begin = std::chrono::high_resolution_clock::now();
             }
 
