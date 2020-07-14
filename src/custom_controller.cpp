@@ -169,10 +169,11 @@ void CustomController::computePlanner()
             wkc_.walkingCompute(rd_);
         //    file[0] << dc_.tocabi_.ZMP_ft(0) << "\t" <<  dc_.tocabi_.ZMP_ft(1) << "\t" << wkc_.com_refx(wkc_.walking_tick)<<"\t"<<wkc_.com_refy(wkc_.walking_tick)<<"\t"<<wkc_.PELV_trajectory_float.translation()(2)<<"\t"<<wkc_.PELV_trajectory_float.translation()(1)<<std::endl;
         //    file[1] << dc_.tocabi_.ZMP(0) << "\t"<< dc_.tocabi_.ZMP(1) << "\t"<<dc_.tocabi_.com_.pos(0) << "\t"<< dc_.tocabi_.com_.pos(1) <<"\t" << dc_.tocabi_.link_[Pelvis].xpos(0) <<"\t"<<wkc_.debug<<std::endl;
-              file[0] << dc_.tocabi_.ZMP(0)<<"\t"<< wkc_.aa(0) << "\t" << wkc_.aa(1) << "\t" << wkc_.aa(2) << "\t" << wkc_.aa(3) << "\t" << wkc_.aa(4) << "\t" << wkc_.aa(5) << std::endl;
-
+        //      file[0] << dc_.tocabi_.ZMP(0)<<"\t"<< wkc_.com_refx(wkc_.walking_tick) << "\t" << wkc_.com_refy(wkc_.walking_tick) << "\t" << wkc_.RFDotTraj(0) <<"\t"<< wkc_.RFDotTraj(1)  <<"\t"<< wkc_.RFDotTraj(2)  <<"\t"<< wkc_.aa(2) << "\t" << wkc_.aa(3) << "\t" << wkc_.aa(4) << "\t" << wkc_.aa(5) << "\t"<< wkc_.aa(6) << "\t" << wkc_.aa(7) << "\t" << wkc_.aa(8) << "\t" << wkc_.aa(9) << "\t" << wkc_.aa(10) << "\t" << wkc_.aa(11) << std::endl;
+        //      file[1] << DyrosMath::rot2Euler((rd_.link_[Left_Foot].Rotm))(1)<<"\t"<< wkc_.RF_trajectory_float.translation()(0) << "\t" << wkc_.RF_trajectory_float.translation()(1) << "\t" << wkc_.LF_trajectory_float.translation()(0) << "\t" << wkc_.RF_float_current.translation()(0) << "\t" << wkc_.RF_float_current.translation()(1) << "\t"<< wkc_.RF_float_current.translation()(2) << "\t"  <<wkc_.Cfsemd(0) << "\t" << wkc_.Cfsemd(1) << "\t"<< wkc_.Cfsemd(2) << "\t" << wkc_.desired_leg_q(7) << "\t" << wkc_.desired_leg_q(8) << "\t" <<wkc_.desired_leg_q(9) << "\t" <<wkc_.desired_leg_q(10) << "\t" <<wkc_.desired_leg_q(11) << std::endl;
+       file[0] <<wkc_.RF_float_current.translation()(0)<<"\t" <<wkc_.RF_float_current.translation()(1)<<"\t" <<wkc_.RF_float_current.translation()(2)<<"\t" <<wkc_.COM_float_current.translation()(0)<< "\t" << wkc_.COM_float_current.translation()(1) << "\t" << wkc_.LF_float_current.translation()(2) << "\t" << wkc_.com_refx(wkc_.walking_tick)<< "\t" << wkc_.com_refy(wkc_.walking_tick)<< "\t" << wkc_.LFDotTraj(2)<<std::endl;
         //           file[0] << dc_.tocabi_.ZMP(0)<<"\t"<< wkc_.aa(0) << "\t" << wkc_.aa(1) << "\t" << wkc_.aa(2) << "\t" << wkc_.aa(3) << "\t" << wkc_.aa(4) << "\t" << wkc_.aa(5) << std::endl;
-
+        file[1] << wkc_.SFerr(0) <<"\t" << wkc_.SFerr(1) <<"\t" << wkc_.SFerr(2) << std::endl;
 
        //  file[0] << wkc_.walking_tick<< "\t"<<wkc_.desired_leg_q(1)<< std::endl;
          //   file[0]<< wkc_.COM(1) <<"\t"<<wkc_.COM_support_current.translation()(1) << "\t"<<wkc_.com_support_temp(1) <<"\t" << wkc_.capturePoint_refy(wkc_.walking_tick) <<"\t" << wkc_.com_refy(wkc_.walking_tick) << std::endl;
