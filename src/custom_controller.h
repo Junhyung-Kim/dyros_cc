@@ -33,6 +33,8 @@ public:
     std::chrono::high_resolution_clock::time_point t_begin;
     int cycle_count;
 
+    Eigen::Vector3d xipos_prev;
+
 private:
     Eigen::VectorQd ControlVal_;
     Eigen::VectorQd TorqueGrav;
