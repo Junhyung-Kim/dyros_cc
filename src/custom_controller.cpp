@@ -181,8 +181,7 @@ void CustomController::computePlanner()
        //      file[0] << dc_.tocabi_.ZMP(0)<<"\t"<< wkc_.aa(0) << "\t" << wkc_.aa(1) << "\t" << wkc_.aa(2) << "\t" << wkc_.aa(3) << "\t" << wkc_.aa(4) << "\t" << 
     //    wkc_.aa(5) << std::endl;
 
-   file[1] <<wkc_.q_w(3) << "\t"<< mom_pino(3) <<"\t"<<mom_pino(4) <<"\t"<<mom_pino(5) <<"\t"<<rd_.com_.angular_momentum(0) <<"\t"<<rd_.com_.angular_momentum(1) <<"\t"<<rd_.com_.angular_momentum(2)<<std::endl;
-
+  
             for(int i = 0; i < 12; i++)
             {
                 ControlVal_(i) = wkc_.desired_leg_q(i);
@@ -196,9 +195,13 @@ void CustomController::computePlanner()
             ControlVal_(13) = wkc_.q_w(1);
             ControlVal_(14) = wkc_.q_w(2);
             ControlVal_(16) = wkc_.q_w(3);
-            ControlVal_(24) = wkc_.q_w(4);
+            ControlVal_(26) = wkc_.q_w(4);
+  
             t[1] = std::chrono::high_resolution_clock::now();
             e_s[0]= t[0] - t[1];
+         
+          file[1] <<wkc_.q_dm(0) << "\t"<< wkc_.q_dm(1) <<"\t"<<wkc_.q_dm(2) <<"\t"<<wkc_.q_dm(3) <<"\t"<<wkc_.q_dm(4)  <<"\t"<<ControlVal_(12)<<"\t"<<ControlVal_(13)<<"\t"<<ControlVal_(14)<<"\t"<<ControlVal_(16)<<"\t"<<ControlVal_(26)<<std::endl;
+
           //  std::cout << "time " << e_s[0].count()*1000 << std::endl;
         }
         else if(tc.walking_enable == 3.0)
