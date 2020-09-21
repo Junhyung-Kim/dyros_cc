@@ -35,11 +35,6 @@ public:
 
     Eigen::Vector3d xipos_prev;
 
-      Eigen::VectorQd q_est;
-  Eigen::VectorQd q_dot_est;
-  Eigen::VectorQd q_ddot_est;
-
-  bool velEst = false;
 
 private:
     Eigen::VectorQd ControlVal_;
