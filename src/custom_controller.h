@@ -1,5 +1,7 @@
 #include <tocabi_controller/data_container.h>
 #include <tocabi_controller/link.h>
+#include <ros/ros.h>
+#include "tocabi_controller/model.h"
 #include "math_type_define.h"
 
 class CustomController
@@ -20,6 +22,8 @@ public:
     Walking_controller &wkc_;
     TaskCommand tc;
 
+    ros::Subscriber tocabi_pinocchio;
+
     const std::string FILE_NAMES[2] =
     {
         ///change this directory when you use this code on the other computer///
@@ -34,6 +38,8 @@ public:
     int cycle_count;
 
     Eigen::Vector3d xipos_prev;
+
+    void PinocchioCallback(const tocabi_controller::model &msg);
 
 
 private:

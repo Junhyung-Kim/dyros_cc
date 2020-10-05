@@ -5,10 +5,13 @@ CustomController::CustomController(DataContainer &dc, RobotData &rd) : dc_(dc), 
     ControlVal_.setZero();
     wkc_.contactMode == 1.0;
     wkc_.phaseChange = false;
+    
     for(int i=0; i<2;i++)
     {
       file[i].open(FILE_NAMES[i].c_str(),std::ios_base::out);
     }
+
+    tocabi_pinocchio = dc.nh.subscribe("/tocabi/pinocchio", 1, &CustomController::PinocchioCallback, this);
 }
 
 Eigen::VectorQd CustomController::getControl()
@@ -190,16 +193,11 @@ void CustomController::computePlanner()
             ControlVal_(26) = wkc_.q_w(4);
 
             rd_.q_dot_desired_.setZero();
-           /* rd_.q_dot_desired_(12) = wkc_.q_dm(0);
-            rd_.q_dot_desired_(13) = wkc_.q_dm(1);
-            rd_.q_dot_desired_(14) = wkc_.q_dm(2);
-            rd_.q_dot_desired_(16) = wkc_.q_dm(3);
-            rd_.q_dot_desired_(26) = wkc_.q_dm(4);
-  */
+
             t[1] = std::chrono::high_resolution_clock::now();
             e_s[0]= t[0] - t[1];
-            
-            file[1] <<1 <<"\t"<< wkc_.q_dm(0)<<"\t" << rd_.q_dot_(12)<<"\t"<< wkc_.q_dm(1)<<"\t" << rd_.q_dot_(13)<<"\t"<< wkc_.q_dm(2)<<"\t" << rd_.q_dot_(14)<<"\t"<<wkc_.q_dm(3)<<"\t" << rd_.q_dot_(16)<<"\t"<< wkc_.q_dm(4)<<"\t" << rd_.q_dot_(26)<<std::endl;  //"\t"<< rd_.q_dot_(2)<<"\t"<<std::endl;
+       
+            file[1] <<1 <<"\t"<< rd_.q_dot_est(0)<<"\t" << rd_.q_dot_(0)<<"\t"<< rd_.q_dot_est(1)<<"\t" << rd_.q_dot_(1)<<"\t"<< rd_.q_dot_est(2)<<"\t" << rd_.q_dot_(2)<<"\t"<<rd_.q_dot_est(3)<<"\t" << rd_.q_dot_(3)<<"\t"<< wkc_.q_dm(4)<<"\t" <<std::endl;  //"\t"<< rd_.q_dot_(2)<<"\t"<<std::endl;
         }
         else if(tc.walking_enable == 3.0)
         {
@@ -220,6 +218,25 @@ void CustomController::computePlanner()
             {
                 ControlVal_(i) = wkc_.desired_init_leg_q(i);
             }
+        }
+    }
+}
+
+void CustomController::PinocchioCallback(const tocabi_controller::model &msg)
+{
+    for (int i = 0; i<6; i++)
+    {
+        for(int j=0; j<MODEL_DOF; j++)
+        {   
+            dc_.tocabi_.Ag_(i,j) = msg.CMM[33*i+j];
+        }
+    }
+    
+    for(int i = 0; i<MODEL_DOF; i++)
+    {
+        for(int j=0; j<MODEL_DOF; j++)
+        {   
+            dc_.tocabi_.Cor_(i,j) = msg.COR[33*i+j];
         }
     }
 }
