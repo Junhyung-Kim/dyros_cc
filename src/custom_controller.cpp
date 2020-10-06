@@ -81,6 +81,12 @@ void CustomController::computeSlow()
             double debug;
             TorqueGrav = wbc_.gravity_compensation_torque(rd_);
             TorqueContact.setZero();
+
+            if(dc_.mode == "realrobot")
+            {
+                TorqueGrav(1) = 1.2*TorqueGrav(1);
+                TorqueGrav(7) = 1.2*TorqueGrav(7);
+            }
             
             if(wkc_.phaseChange)
             {
