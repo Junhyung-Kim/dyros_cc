@@ -27,8 +27,8 @@ public:
     const std::string FILE_NAMES[2] =
     {
         ///change this directory when you use this code on the other computer///
-        "/home/jhk/data/walking/0_tocabi_.txt",
-        "/home/jhk/data/walking/1_tocabi_.txt",
+        "/home/dyros_rm/0_tocabi_.txt",
+        "/home/dyros_rm/1_tocabi_.txt",
     };
     
     std::fstream file[2];
