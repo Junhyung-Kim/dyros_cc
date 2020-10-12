@@ -168,7 +168,7 @@ void CustomController::computePlanner()
                 cycle_count = 0;
                 command_init = false;
                 wkc_.setRobotStateInitialize();
-                wkc_.getUiWalkingParameter(walkingHz, tc.walking_enable, tc.ik_mode, tc.walking_pattern, tc.walking_pattern2, tc.foot_step_dir, tc.target_x, tc.target_y, tc.target_z, tc.theta, tc.height, tc.step_length_x, tc.step_length_y, tc.dob, tc.imu_walk, rd_);
+                wkc_.getUiWalkingParameter(walkingHz, tc.walking_enable, tc.ik_mode, tc.walking_pattern, tc.walking_pattern2, tc.foot_step_dir, tc.target_x, tc.target_y, tc.target_z, tc.theta, tc.height, tc.step_length_x, tc.step_length_y, tc.dob, tc.imu_walk, tc.mom, rd_);
                 t_begin = std::chrono::high_resolution_clock::now();
                 
                 for(int i = 12; i<MODEL_DOF; i++)
@@ -215,7 +215,7 @@ void CustomController::computePlanner()
                 cycle_count = 0;
                 command_init = false;
                 wkc_.setRobotStateInitialize();
-                wkc_.getUiWalkingParameter(walkingHz, tc.walking_enable, tc.ik_mode, tc.walking_pattern, tc.walking_pattern2, tc.foot_step_dir, tc.target_x, tc.target_y, tc.target_z, tc.theta, tc.height, tc.step_length_x, tc.step_length_y, tc.dob, tc.imu_walk, rd_);
+                wkc_.getUiWalkingParameter(walkingHz, tc.walking_enable, tc.ik_mode, tc.walking_pattern, tc.walking_pattern2, tc.foot_step_dir, tc.target_x, tc.target_y, tc.target_z, tc.theta, tc.height, tc.step_length_x, tc.step_length_y, tc.dob, tc.imu_walk, tc.mom, rd_);
                 t_begin = std::chrono::high_resolution_clock::now();
             }
 
