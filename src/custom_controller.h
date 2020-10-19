@@ -1,3 +1,4 @@
+
 #include <tocabi_controller/data_container.h>
 #include <tocabi_controller/link.h>
 #include <ros/ros.h>
@@ -27,8 +28,8 @@ public:
     const std::string FILE_NAMES[2] =
     {
         ///change this directory when you use this code on the other computer///
-        "/home/dyros/data/walking/0_tocabi_.txt",
-        "/home/dyros/data/walking/1_tocabi_.txt",
+        "/home/jhk/data/walking/0_tocabi_.txt",
+        "/home/jhk/data/walking/1_tocabi_.txt",
     };
     
     std::fstream file[2];

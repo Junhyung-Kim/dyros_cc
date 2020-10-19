@@ -1,6 +1,6 @@
 #include "custom_controller.h"
 
-CustomController::CustomController(DataContainer &dc, RobotData &rd) : dc_(dc), rd_(rd), wbc_(dc.wbc_), wkc_(dc.wkc_)
+CustomController::CustomController(DataContainer &dc, RobotData &rd) : dc_(dc), rd_(rd), wbc_(dc_.wbc_), wkc_(dc_.wkc_)
 {
     ControlVal_.setZero();
     wkc_.contactMode == 1.0;
@@ -11,7 +11,7 @@ CustomController::CustomController(DataContainer &dc, RobotData &rd) : dc_(dc), 
       file[i].open(FILE_NAMES[i].c_str(),std::ios_base::out);
     }
 
-    tocabi_pinocchio = dc.nh.subscribe("/tocabi/pinocchio", 1, &CustomController::PinocchioCallback, this);
+    tocabi_pinocchio = dc_.nh.subscribe("/tocabi/pinocchio", 1, &CustomController::PinocchioCallback, this);
 }
 
 Eigen::VectorQd CustomController::getControl()
@@ -164,17 +164,17 @@ void CustomController::computePlanner()
             t[0] = std::chrono::high_resolution_clock::now();
             
             if(command_init == true)
-            {   
+            {
                 cycle_count = 0;
                 command_init = false;
-                wkc_.setRobotStateInitialize();
-                wkc_.getUiWalkingParameter(walkingHz, tc.walking_enable, tc.ik_mode, tc.walking_pattern, tc.walking_pattern2, tc.foot_step_dir, tc.target_x, tc.target_y, tc.target_z, tc.theta, tc.height, tc.step_length_x, tc.step_length_y, tc.dob, tc.imu_walk, tc.mom, rd_);
+                wkc_.setRobotStateInitialize(rd_);
+                wkc_.getUiWalkingParameter(walkingHz, tc.walking_enable, tc.ik_mode, tc.walking_pattern, tc.walking_pattern2, tc.foot_step_dir, tc.target_x, tc.target_y, tc.target_z, tc.theta, tc.height, tc.step_length_x, tc.step_length_y, tc.dob, tc.imu_walk, tc.mom, tc.vibration_control, rd_);
                 t_begin = std::chrono::high_resolution_clock::now();
-                
-                for(int i = 12; i<MODEL_DOF; i++)
+
+                for (int i = 12; i < MODEL_DOF; i++)
                 {
                     wkc_.desired_init_leg_q(i) = rd_.q_(i);
-                }                
+                }
             }
 
             Eigen::Vector6d temp11, temp12, temp13;
@@ -203,10 +203,12 @@ void CustomController::computePlanner()
             t[1] = std::chrono::high_resolution_clock::now();
             e_s[0]= t[0] - t[1];
        
-
+       //     file[1] << rd_.link_[Pelvis].xipos(1) <<"\t" << rd_.ZMP(1) << std::endl;
         //    file[1] <<(wkc_.RF_fisrt_init).translation()(0)  << "\t" << wkc_.capturePoint_ox(2) << "\t" << wkc_.capturePoint_ox(3)<< "\t" << wkc_.foot_step(1,0) <<"\t"<<wkc_.foot_step(0,0) <<"\t"<< wkc_.PELV_trajectory_float.translation()(0)<<"\t" << wkc_.PELV_trajectory_float.translation()(2)<<"\t"<< wkc_.RF_trajectory_float.translation()(0)<<"\t" << wkc_.RF_trajectory_float.translation()(2)<<"\t"<< rd_.q_dot_est(2)<<"\t" << rd_.q_dot_(2)<<"\t"<<rd_.q_dot_est(3)<<"\t" << rd_.q_dot_(3)<<"\t"<< wkc_.q_dm(4)<<"\t" <<std::endl;  //"\t"<< rd_.q_dot_(2)<<"\t"<<std::endl;
-        file[1] << ControlVal_(0) << "\t" << ControlVal_(1) << "\t" << ControlVal_(2) << "\t" << ControlVal_(3) << "\t" << ControlVal_(4) << "\t" << ControlVal_(5) << std::endl;
-        
+        file[1] << wkc_.PELV_trajectory_float.translation()(1) << "\t" << wkc_.PELV_trajectory_float.translation()(0) << "\t" << wkc_.com_refx(wkc_.walking_tick) << "\t" << rd_.link_[Pelvis].xipos(0) << "\t" << rd_.link_[Pelvis].xipos(1)<< "\t" << rd_.link_[Pelvis].xipos(2)  << "\t" << rd_.link_[Left_Foot].xipos(0) << "\t" << rd_.link_[Left_Foot].xipos(1) << "\t" << rd_.link_[Left_Foot].xipos(2)<< "\t" << rd_.link_[Right_Foot].xipos(0) << "\t" << rd_.link_[Right_Foot].xipos(1)<< "\t" << rd_.link_[Right_Foot].xipos(2)  <<  "\t" << ControlVal_(4) << "\t" << ControlVal_(5) << std::endl;
+       // file[1]<< wkc_.ux_vib <<"\t"<<wkc_.yx_vibm(0)<<"\t"<<wkc_.yx_vibm(1)<<"\t"<<wkc_.yx_vibm(2)<<"\t"<< (wkc_.yx_vib)(0) <<"\t"<< (wkc_.yx_vib)(1) <<"\t" << wkc_.yx_vib(2) <<  "\t"<< wkc_.yx_vib(0) << "\t"<< wkc_.yx_vib(1) << "\t"<< wkc_.yx_vib(2) << "\t"<< wkc_.xx_vib_est(0) << "\t"<< wkc_.xx_vib_est(1) << "\t" << wkc_.PELV_trajectory_float.translation()(0) << "\t"<< wkc_.PELV_trajectory_float.translation()(1) << "\t"<< wkc_.PELV_trajectory_float.translation()(2) << "\t"<< wkc_.RF_trajectory_float.translation()(0) << "\t"<< wkc_.RF_trajectory_float.translation()(1) << "\t"<< wkc_.RF_trajectory_float.translation()(2) <<std::endl;
+        //file[1] << wkc_.ux_vib <<"\t" << rd_.ContactForce(0) <<"\t"<< rd_.ContactForce(1) <<"\t"<< rd_.ContactForce(2) <<"\t"<< rd_.ContactForce(3) <<"\t"<< rd_.ContactForce(4) <<"\t"<< rd_.ContactForce(5)<<"\t"<<rd_.link_[Pelvis].xipos(2) <<std::endl;        } 
+       // file[1] <<rd_.ee_[0].contact <<"\t"<< rd_.ee_[1].contact<<"\t"<< rd_.ContactForce(0) <<"\t"<< dc_.torque_desired(0) <<"\t"<< dc_.torque_desired(1) <<"\t"<< dc_.torque_desired(2) <<"\t"<< dc_.torque_desired(3) <<"\t"<< dc_.torque_desired(4) <<"\t"<<rd_.ContactForce(5)<<std::endl;
         }
         else if(tc.walking_enable == 3.0)
         {
@@ -214,8 +216,8 @@ void CustomController::computePlanner()
             {   
                 cycle_count = 0;
                 command_init = false;
-                wkc_.setRobotStateInitialize();
-                wkc_.getUiWalkingParameter(walkingHz, tc.walking_enable, tc.ik_mode, tc.walking_pattern, tc.walking_pattern2, tc.foot_step_dir, tc.target_x, tc.target_y, tc.target_z, tc.theta, tc.height, tc.step_length_x, tc.step_length_y, tc.dob, tc.imu_walk, tc.mom, rd_);
+                wkc_.setRobotStateInitialize(rd_);
+                wkc_.getUiWalkingParameter(walkingHz, tc.walking_enable, tc.ik_mode, tc.walking_pattern, tc.walking_pattern2, tc.foot_step_dir, tc.target_x, tc.target_y, tc.target_z, tc.theta, tc.height, tc.step_length_x, tc.step_length_y, tc.dob, tc.imu_walk, tc.mom, tc.vibration_control, rd_);
                 t_begin = std::chrono::high_resolution_clock::now();
             }
 
