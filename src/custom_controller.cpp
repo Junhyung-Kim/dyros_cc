@@ -1,16 +1,17 @@
 #include "custom_controller.h"
+#include <mutex>
 
 CustomController::CustomController(DataContainer &dc, RobotData &rd) : dc_(dc), rd_(rd), wbc_(dc_.wbc_), wkc_(dc_.wkc_)
 {
     ControlVal_.setZero();
-    wkc_.contactMode == 1.0;
+    wkc_.contactMode = 1.0;
     wkc_.phaseChange = false;
+    walking_tickc = 0;
 
     for(int i=0; i<2;i++)
     {
       file[i].open(FILE_NAMES[i].c_str(),std::ios_base::out);
     }
-
     tocabi_pinocchio = dc_.nh.subscribe("/tocabi/pinocchio", 1, &CustomController::PinocchioCallback, this);
 }
 
@@ -58,21 +59,43 @@ void CustomController::computeSlow()
     {
         if(tc.walking_enable == 1.0)
         {
-            if(wkc_.contactMode == 1.0)
-            {
-               rd_.ee_[0].contact = 1.0;
-               rd_.ee_[1].contact = 1.0;
-            }
-            else if(wkc_.contactMode == 2.0)
-            {
-               rd_.ee_[0].contact = 1.0;
-               rd_.ee_[1].contact = 0.0;
+            if(walking_tickc>0)
+            {    
+                if(contactModec == 1.0)
+                {
+                    rd_.ee_[0].contact = 1.0;
+                    rd_.ee_[1].contact = 1.0;
+                }
+                else if(contactModec == 2.0)
+                {
+                    rd_.ee_[0].contact = 1.0;
+                    rd_.ee_[1].contact = 0.0;
+                }
+                else
+                {
+                    rd_.ee_[0].contact = 0.0;
+                    rd_.ee_[1].contact = 1.0;
+                }
             }
             else
             {
-                rd_.ee_[0].contact = 0.0;
-                rd_.ee_[1].contact = 1.0;
+                if(wkc_.contactMode == 1.0)
+                {
+                    rd_.ee_[0].contact = 1.0;
+                    rd_.ee_[1].contact = 1.0;
+                }
+                else if(wkc_.contactMode == 2.0)
+                {
+                    rd_.ee_[0].contact = 1.0;
+                    rd_.ee_[1].contact = 0.0;
+                }
+                else
+                {
+                    rd_.ee_[0].contact = 0.0;
+                    rd_.ee_[1].contact = 1.0;
+                }
             }
+            
 
             Vector12d fc_redis;
             double fc_ratio = 0.000;
@@ -88,45 +111,41 @@ void CustomController::computeSlow()
                 TorqueGrav(7) = 1.2*TorqueGrav(7);
             }
             
-            if(wkc_.phaseChange)
+            if(walking_tickc > 0)
             {
-                wkc_.rate = DyrosMath::cubic(wkc_.walking_tick,wkc_.double2Single_pre, wkc_.double2Single,1,0,0,0);
-                debug =0.1;
-                TorqueContact = wbc_.contact_force_redistribution_torque_walking(rd_, TorqueGrav, fc_redis, fc_ratio, wkc_.rate, wkc_.foot_step(wkc_.current_step_num,6));
-            
-            }
-            else
-            {
-                if(wkc_.contactMode == 1.0)
+                if(phaseChangec)
                 {
-                    wkc_.rate = 1;
-                    debug =0.2;
-                    TorqueContact = wbc_.contact_force_redistribution_torque_walking(rd_, TorqueGrav, fc_redis, fc_ratio, 1.0, wkc_.foot_step(wkc_.current_step_num,6));
+                    rate = DyrosMath::cubic(walking_tickc,double2Single_prec, double2Singlec,1,0,0,0);
+                    debug =0.1;
+                    TorqueContact = wbc_.contact_force_redistribution_torque_walking(rd_, TorqueGrav, fc_redis, fc_ratio, rate, foot_stepc(current_step_numc,6));
                 }
                 else
                 {
-                    wkc_.rate = 0.0;
-                    TorqueContact.setZero();
-                    debug =0.3;
-                }
-            }          
+                    if(contactModec == 1.0)
+                    {
+                        rate = 1;
+                        debug =0.2;
+                        TorqueContact.setZero();
+                        TorqueContact = wbc_.contact_force_redistribution_torque_walking(rd_, TorqueGrav, fc_redis, fc_ratio, 1.0, foot_stepc(current_step_numc,6));
+                    }
+                    else
+                    {
+                        rate = 0.0;
+                        TorqueContact.setZero();
+                        debug =0.3;
+                    }                
+                }         
+            } 
 
             rd_.torque_grav_cc = TorqueGrav + TorqueContact;
-            if(filter_init == true)
-            {
-                TorqueContact_prev = rd_.torque_grav_cc;
-                filter_init = false;
-            }
-
-            TorqueContact_notfilter = rd_.torque_grav_cc;
             
-            for(int i=0; i<MODEL_DOF; i++)
+            if(walking_tickc >0)
             {
-                rd_.torque_grav_cc(i) = 0.012*rd_.torque_grav_cc(i)+(1-0.012)*TorqueContact_prev(i);
-            }
-            
-            TorqueContact_prev = rd_.torque_grav_cc;    
-
+ //        file[1] << wkc_.PELV_trajectory_float.translation()(0) <<"\t"<<wkc_.PELVD_trajectory_float.translation()(0)<<"\t"<< wkc_.PELV_trajectory_float.translation()(1) <<"\t"<<wkc_.PELVD_trajectory_float.translation()(1)<<"\t"<< wkc_.PELV_trajectory_float.translation()(2) <<"\t"<<wkc_.PELVD_trajectory_float.translation()(2)<<"\t"<< wkc_.RF_trajectory_float.translation()(0) <<"\t"<<wkc_.RFD_trajectory_float.translation()(0)<<"\t"<< wkc_.RF_trajectory_float.translation()(1) <<"\t"<<wkc_.RFD_trajectory_float.translation()(1)<<"\t"<< wkc_.RF_trajectory_float.translation()(2) <<"\t"<<wkc_.RFD_trajectory_float.translation()(2)<<"\t"<< wkc_.LF_trajectory_float.translation()(0) <<"\t"<<wkc_.LFD_trajectory_float.translation()(0)<<"\t"<< wkc_.LF_trajectory_float.translation()(1) <<"\t"<<wkc_.LFD_trajectory_float.translation()(1)<<"\t"<< wkc_.LF_trajectory_float.translation()(2) <<"\t"<<wkc_.LFD_trajectory_float.translation()(2)<<"\t"<<wkc_.contactMode<<"\t"<<contactModec<<"\t"<<wkc_.phaseChange<<"\t"<<phaseChangec<<"\t"<<rate<<"\t"<<wkc_.foot_step(wkc_.current_step_num,6)<<"\t"<<foot_stepc(current_step_numc,6)<<"\t"<<wkc_.current_step_num<<"\t"<<current_step_numc<<"\t"<<TorqueContact(0)<<std::endl;   
+                file[1] <<rd_.torque_grav_cc(0)<<"\t"<<rd_.torque_grav_cc(1)<<"\t"<<rd_.torque_grav_cc(2)<<"\t"<<rd_.torque_grav_cc(3)<<"\t"<<rd_.torque_grav_cc(4)<<"\t"<<rd_.torque_grav_cc(5)<<"\t"<<TorqueContact(0)<<std::endl;
+  
+//  file[1] <<TorqueContact(0)<<"\t"<<TorqueContact(1)<<"\t"<<TorqueContact(2)<<"\t"<<TorqueContact(3)<<"\t"<<TorqueContact(4)<<"\t"<<TorqueContact(5)<<std::endl;
+            }           
         } 
         else if(tc.walking_enable == 3.0)
         {
@@ -183,6 +202,17 @@ void CustomController::computePlanner()
 
             wkc_.walkingCompute(rd_);
   
+            mtx_wlk.lock();
+            current_step_numc = wkc_.current_step_num;
+            walking_tickc = wkc_.walking_tick;
+            foot_stepc = wkc_.foot_step;
+            contactModec = wkc_.contactMode;
+            phaseChangec = wkc_.phaseChange;
+            double2Single_prec = wkc_.double2Single_pre;
+            double2Singlec = wkc_.double2Single;
+
+            mtx_wlk.unlock();
+
             for(int i = 0; i < 12; i++)
             {
                 ControlVal_(i) = wkc_.desired_leg_q(i);
@@ -205,9 +235,8 @@ void CustomController::computePlanner()
        
        //     file[1] << rd_.link_[Pelvis].xipos(1) <<"\t" << rd_.ZMP(1) << std::endl;
         //    file[1] <<(wkc_.RF_fisrt_init).translation()(0)  << "\t" << wkc_.capturePoint_ox(2) << "\t" << wkc_.capturePoint_ox(3)<< "\t" << wkc_.foot_step(1,0) <<"\t"<<wkc_.foot_step(0,0) <<"\t"<< wkc_.PELV_trajectory_float.translation()(0)<<"\t" << wkc_.PELV_trajectory_float.translation()(2)<<"\t"<< wkc_.RF_trajectory_float.translation()(0)<<"\t" << wkc_.RF_trajectory_float.translation()(2)<<"\t"<< rd_.q_dot_est(2)<<"\t" << rd_.q_dot_(2)<<"\t"<<rd_.q_dot_est(3)<<"\t" << rd_.q_dot_(3)<<"\t"<< wkc_.q_dm(4)<<"\t" <<std::endl;  //"\t"<< rd_.q_dot_(2)<<"\t"<<std::endl;
-        file[1] << wkc_.PELV_trajectory_float.translation()(1) << "\t" << wkc_.PELV_trajectory_float.translation()(0) << "\t" << wkc_.com_refx(wkc_.walking_tick) << "\t" << rd_.link_[Pelvis].xipos(0) << "\t" << rd_.link_[Pelvis].xipos(1)<< "\t" << rd_.link_[Pelvis].xipos(2)  << "\t" << rd_.link_[Left_Foot].xipos(0) << "\t" << rd_.link_[Left_Foot].xipos(1) << "\t" << rd_.link_[Left_Foot].xipos(2)<< "\t" << rd_.link_[Right_Foot].xipos(0) << "\t" << rd_.link_[Right_Foot].xipos(1)<< "\t" << rd_.link_[Right_Foot].xipos(2)  <<  "\t" << ControlVal_(4) << "\t" << ControlVal_(5) << std::endl;
-       // file[1]<< wkc_.ux_vib <<"\t"<<wkc_.yx_vibm(0)<<"\t"<<wkc_.yx_vibm(1)<<"\t"<<wkc_.yx_vibm(2)<<"\t"<< (wkc_.yx_vib)(0) <<"\t"<< (wkc_.yx_vib)(1) <<"\t" << wkc_.yx_vib(2) <<  "\t"<< wkc_.yx_vib(0) << "\t"<< wkc_.yx_vib(1) << "\t"<< wkc_.yx_vib(2) << "\t"<< wkc_.xx_vib_est(0) << "\t"<< wkc_.xx_vib_est(1) << "\t" << wkc_.PELV_trajectory_float.translation()(0) << "\t"<< wkc_.PELV_trajectory_float.translation()(1) << "\t"<< wkc_.PELV_trajectory_float.translation()(2) << "\t"<< wkc_.RF_trajectory_float.translation()(0) << "\t"<< wkc_.RF_trajectory_float.translation()(1) << "\t"<< wkc_.RF_trajectory_float.translation()(2) <<std::endl;
-        //file[1] << wkc_.ux_vib <<"\t" << rd_.ContactForce(0) <<"\t"<< rd_.ContactForce(1) <<"\t"<< rd_.ContactForce(2) <<"\t"<< rd_.ContactForce(3) <<"\t"<< rd_.ContactForce(4) <<"\t"<< rd_.ContactForce(5)<<"\t"<<rd_.link_[Pelvis].xipos(2) <<std::endl;        } 
+     //   file[1] <<wkc_.com_refdx(wkc_.walking_tick)<<"\t"<<wkc_.com_refx(wkc_.walking_tick)<<"\t"<<rd_.com_.pos(0)<<"\t"<<wkc_.H_leg(1)<<"\t"<<ControlVal_(13)<<"\t"<<wkc_.q_dm(1)<<"\t"<<DyrosMath::rot2Euler(rd_.link_[0].Rotm)(0)<<"\t" <<rd_.link_[0].xpos(2)-rd_.link_[4].xpos(2)<<"\t"<<rd_.link_[5].xpos(0)<< "\t"<<wkc_.PELV_trajectory_float.translation()(0) << "\t" << wkc_.PELV_trajectory_float.translation()(1) << "\t"<< wkc_.RF_trajectory_float.translation()(0) << "\t" << wkc_.RF_trajectory_float.translation()(1) << "\t" << wkc_.com_refx(wkc_.walking_tick) << "\t" << rd_.link_[Pelvis].xipos(0) << "\t" << rd_.link_[Pelvis].xipos(1)<< "\t" << rd_.link_[Pelvis].xipos(2)  << "\t" << rd_.link_[Left_Foot].xipos(0) << "\t" << rd_.link_[Left_Foot].xipos(1) << "\t" << rd_.link_[Left_Foot].xipos(2)<< "\t" << rd_.link_[Right_Foot].xipos(0) << "\t" << rd_.link_[Right_Foot].xipos(1)<< "\t" << rd_.link_[Right_Foot].xipos(2)  <<  "\t" << ControlVal_(4) <<"\t"<<rd_.q_(4)<< "\t" << ControlVal_(5) <<"\t" << rd_.q_(5)<< std::endl;
+    // file[1] << wkc_.PELV_trajectory_float.translation()(0) <<"\t"<<wkc_.PELVD_trajectory_float.translation()(0)<<"\t"<< wkc_.PELV_trajectory_float.translation()(1) <<"\t"<<wkc_.PELVD_trajectory_float.translation()(1)<<"\t"<< wkc_.PELV_trajectory_float.translation()(2) <<"\t"<<wkc_.PELVD_trajectory_float.translation()(2)<<"\t"<< wkc_.RF_trajectory_float.translation()(0) <<"\t"<<wkc_.RFD_trajectory_float.translation()(0)<<"\t"<< wkc_.RF_trajectory_float.translation()(1) <<"\t"<<wkc_.RFD_trajectory_float.translation()(1)<<"\t"<< wkc_.RF_trajectory_float.translation()(2) <<"\t"<<wkc_.RFD_trajectory_float.translation()(2)<<"\t"<< wkc_.LF_trajectory_float.translation()(0) <<"\t"<<wkc_.LFD_trajectory_float.translation()(0)<<"\t"<< wkc_.LF_trajectory_float.translation()(1) <<"\t"<<wkc_.LFD_trajectory_float.translation()(1)<<"\t"<< wkc_.LF_trajectory_float.translation()(2) <<"\t"<<wkc_.LFD_trajectory_float.translation()(2)<<"\t"<<wkc_.contactMode<<"\t"<<wkc_.phaseChange<<"\t"<<wkc_.rate<<"\t"<<wkc_.foot_step(wkc_.current_step_num,6)<<"\t"<<wkc_.current_step_num<<std::endl;   
        // file[1] <<rd_.ee_[0].contact <<"\t"<< rd_.ee_[1].contact<<"\t"<< rd_.ContactForce(0) <<"\t"<< dc_.torque_desired(0) <<"\t"<< dc_.torque_desired(1) <<"\t"<< dc_.torque_desired(2) <<"\t"<< dc_.torque_desired(3) <<"\t"<< dc_.torque_desired(4) <<"\t"<<rd_.ContactForce(5)<<std::endl;
         }
         else if(tc.walking_enable == 3.0)

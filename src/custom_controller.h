@@ -39,6 +39,16 @@ public:
     int cycle_count;
 
     Eigen::Vector3d xipos_prev;
+    Eigen::MatrixXd foot_stepc;
+    int contactModec;
+    int walking_tickc;
+    bool phaseChangec;
+    int current_step_numc;
+    int double2Single_prec;
+    int double2Singlec;
+    double rate;
+
+    std::mutex mtx_wlk;
 
     void PinocchioCallback(const tocabi_controller::model &msg);
 
