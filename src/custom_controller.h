@@ -43,9 +43,13 @@ public:
     int contactModec;
     int walking_tickc;
     bool phaseChangec;
+    bool phaseChangec1;
     int current_step_numc;
+    int total_step_numc;
     int double2Single_prec;
     int double2Singlec;
+    int single2Double_prec;
+    int single2Doublec;
     double rate;
 
     std::mutex mtx_wlk;
