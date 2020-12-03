@@ -40,6 +40,7 @@ public:
 
     Eigen::Vector3d xipos_prev;
     Eigen::MatrixXd foot_stepc;
+    Eigen::VectorQd torque_prev;
     int contactModec;
     int walking_tickc;
     bool phaseChangec;
@@ -51,6 +52,12 @@ public:
     int single2Double_prec;
     int single2Doublec;
     double rate;
+    double L;
+    Eigen::VectorQd Int_dis;
+    Eigen::VectorQd torque_dis;
+
+    Eigen::VectorQd torque_dis_prev;
+
 
     std::mutex mtx_wlk;
 
