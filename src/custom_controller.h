@@ -3,20 +3,21 @@
 #include <tocabi_controller/link.h>
 #include <ros/ros.h>
 #include "tocabi_controller/model.h"
+#include "std_msgs/String.h"
 #include "math_type_define.h"
 
 class CustomController
 {
 public:
-    CustomController(DataContainer &dc,RobotData &rd);
+    CustomController(DataContainer &dc, RobotData &rd);
     Eigen::VectorQd getControl();
 
     void taskCommandToCC(TaskCommand tc_);
-    
+
     void computeSlow();
     void computeFast();
     void computePlanner();
-    
+
     DataContainer &dc_;
     RobotData &rd_;
     WholebodyController &wbc_;
@@ -26,12 +27,12 @@ public:
     ros::Subscriber tocabi_pinocchio;
 
     const std::string FILE_NAMES[2] =
-    {
-        ///change this directory when you use this code on the other computer///
-        "/home/jhk/data/walking/0_tocabi_.txt",
-        "/home/jhk/data/walking/1_tocabi_.txt",
+        {
+            ///change this directory when you use this code on the other computer///
+            "/home/jhk/data/walking/0_tocabi_.txt",
+            "/home/jhk/data/walking/1_tocabi_.txt",
     };
-    
+
     std::fstream file[2];
 
     bool command_init = false;
@@ -57,12 +58,25 @@ public:
     Eigen::VectorQd torque_dis;
 
     Eigen::VectorQd torque_dis_prev;
+    Eigen::Vector2d zmp_prevlpf;
+    Eigen::Vector4d torque_dis1_prev;
+    bool callback_check = false;
+    Eigen::Vector3d com_dotprev;
+    int callback_tick = 0;
 
+    ros::Publisher joint_pin_pub;
+    ros::Publisher dist_pub;
+    sensor_msgs::JointState joint_state_msg;
+
+    Eigen::Vector12d contactforce_lpf;
+    Eigen::Vector12d contactforce_prev;
+
+    Eigen::VectorVQd q_dot_virtual_prev;
+    Eigen::VectorVQd q_ddot_virtual_;
 
     std::mutex mtx_wlk;
 
     void PinocchioCallback(const tocabi_controller::model &msg);
-
 
 private:
     Eigen::VectorQd ControlVal_;
