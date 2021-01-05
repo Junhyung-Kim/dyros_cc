@@ -62,6 +62,8 @@ public:
     Eigen::Vector4d torque_dis1_prev;
     bool callback_check = false;
     Eigen::Vector3d com_dotprev;
+    Eigen::Vector3d com_prev;
+   
     int callback_tick = 0;
 
     ros::Publisher joint_pin_pub;
@@ -73,10 +75,22 @@ public:
 
     Eigen::VectorVQd q_dot_virtual_prev;
     Eigen::VectorVQd q_ddot_virtual_;
+    Eigen::VectorQd q_est1;
+    Eigen::VectorQd q_dot_est1;
+    Eigen::VectorQd q_dot_est1_prev;
+    Eigen::VectorQd q_dot_est1_pprev;
+    Eigen::VectorQd q_ddot_est1;
+
+    Eigen::Vector3d CM_moment_pin;
+    bool velEst = false;
+    bool debug = false;
+   // bool velEst1 = false;
 
     std::mutex mtx_wlk;
+    int a=0;
 
     void PinocchioCallback(const tocabi_controller::model &msg);
+    void jointVelocityEstimate1();
 
 private:
     Eigen::VectorQd ControlVal_;
