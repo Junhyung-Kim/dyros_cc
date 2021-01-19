@@ -171,7 +171,7 @@ void CustomController::computeSlow()
         }
     }
         //    file[0] << walking_tickc<<"\t"<<rate<<"\t" << dc_.torque_desired(3) << "\t" << double2Single_prec<< "\t"<<single2Double_prec<<"\t"<<wkc_.RF_trajectory_float.translation()(2) << "\t"<<wkc_.LF_trajectory_float.translation()(2) << "\t"<<phaseChangec<<"\t"<<phaseChangec1<<std::endl;      
-        file[0] << dc_.torque_desired(1)<<"\t"<<dc_.torque_desired(2)<<"\t" << dc_.torque_desired(3) << "\t" << dc_.torque_desired(4)<< "\t"<<dc_.torque_desired(5)<<"\t"<<wkc_.RF_trajectory_float.translation()(2) << "\t"<<wkc_.LF_trajectory_float.translation()(2) << "\t"<<phaseChangec<<"\t"<<phaseChangec1<<std::endl;      
+     //   file[0] << dc_.torque_desired(1)<<"\t"<<dc_.torque_desired(2)<<"\t" << dc_.torque_desired(3) << "\t" << dc_.torque_desired(4)<< "\t"<<dc_.torque_desired(5)<<"\t"<<wkc_.RF_trajectory_float.translation()(2) << "\t"<<wkc_.LF_trajectory_float.translation()(2) << "\t"<<phaseChangec<<"\t"<<phaseChangec1<<std::endl;      
 }
 
 void CustomController::computeFast()
@@ -279,12 +279,12 @@ void CustomController::computePlanner()
                 if (wkc_.walking_tick > 5300 && wkc_.walking_tick < 5500)
                 {
                     sim_msg_.data = "DIST";
-                 //   dist_pub.publish(sim_msg_);
+                //    dist_pub.publish(sim_msg_);
                 }
                 else if (wkc_.walking_tick == 5500)
                 {
                     sim_msg_.data = "NONE";
-                 //   dist_pub.publish(sim_msg_);
+                //    dist_pub.publish(sim_msg_);
                 }
 
                 for (int i = 0; i < 12; i++)
@@ -512,7 +512,32 @@ void CustomController::computePlanner()
                 //     file[1] <<wkc_.PELV_trajectory_float.translation()(0)<<"\t"<<wkc_.PELV_trajectory_float.translation()(1)<<"\t"<< wkc_.com_refy(wkc_.walking_tick) << "\t" << rd_.com_.pos(1)<<"\t" << rd_.link_[Pelvis].xipos(1) <<"\t" << wkc_.xy_vib_est(0)<<std::endl;
                 //   "\t" << rd_.link_[Left_Foot].xipos(0) << "\t" << rd_.link_[Left_Foot].xipos(1) << "\t" << rd_.link_[Left_Foot].xipos(2)<< "\t" << rd_.link_[Right_Foot].xipos(0) << "\t" << rd_.link_[Right_Foot].xipos(1)<< "\t" << rd_.link_[Right_Foot].xipos(2)
                 //file[1]<<dc_.torque_dist(4)<<"\t"<<dc_.torque_dist(5)<<"\t"<<dc_.torque_dist(10)<<"\t"<<dc_.torque_dist(11)<<"\t"<< L__<<"\t"<<ZMP_ft(0)<<"\t"<<ZMP_ft(1)<<"\t"<< L__ <<"\t" <<desired_ankle_torque(0) <<"\t" << desired_ankle_torque(1) <<"\t" << desired_ankle_torque(2) <<std::endl;
+            //    file[1] << wkc_.comFcur(0) << "\t"<< wkc_.comFcur(1) << "\t"<< wkc_.comFcur(2) << "\t"<< wkc_.comFref(0) << "\t"<< wkc_.comFref(1) << "\t"<< wkc_.comFref(2) << "\t"<< wkc_.comFerr(0) << "\t"<< wkc_.comFerr(1) << "\t" << wkc_.CM_momentumUpperd_(0) <<"\t" << wkc_.CM_momentumUpperd_(1) <<"\t"<<wkc_.CM_momentUpper_(0)<<"\t"<<wkc_.CM_momentUpper_(1)<<"\t"<<wkc_.H_leg(0)<<"\t"<<wkc_.H_leg(1)<<"\t"<<wkc_.q_dm(0)<<"\t"<<wkc_.q_dm(1)<<"\t"<<wkc_.q_dm(2)<<"\t"<<rd_.com_.pos(0)<<"\t"<<wkc_.com_refx(wkc_.walking_tick)<<"\t"<<rd_.com_.pos(1)<<"\t"<<wkc_.com_refy(wkc_.walking_tick)<<"\t"<<wkc_.Hl_leg(0)<<"\t"<<wkc_.Hl_leg(1)<<"\t"<<wkc_.Hl_leg(2)<<"\t"<<wkc_.com_refdx(wkc_.walking_tick)<<"\t"<<rd_.com_.vel(0)<<std::endl;
+          //file[1] << wkc_.desired_leg_q(2) << "\t"<< wkc_.desired_leg_q(8) << "\t"<< wkc_.desired_leg_q(3) << "\t"<< wkc_.desired_leg_q(9) << "\t"<< wkc_.desired_leg_q(4) << "\t"<< wkc_.desired_leg_q(10) <<std::endl;  
+        //    file[1] <<wkc_.H_leg(0) << "\t" << wkc_.H_leg(1) << "\t" << wkc_.H_leg(2) << "\t" <<  wkc_.H_legl(0) << "\t" << wkc_.H_legl(1) << "\t" << wkc_.H_legl(2) << "\t" << wkc_.H_legr(0) << "\t" << wkc_.H_legr(1) << "\t" << wkc_.H_legr(2) << "\t"<<rd_.q_dot_(2) <<"\t"<<rd_.q_dot_(8) <<"\t"<<rd_.q_dot_(3) <<"\t"<<rd_.q_dot_(9) << "\t"<<rd_.q_dot_(4) <<"\t"<<rd_.q_dot_(10) <<"\t"<<wkc_.q_w(0)<<"\t"<<wkc_.q_w(1)<<"\t"<<wkc_.q_w(2)<<"\t"<<wkc_.com_refx(wkc_.walking_tick)<<"\t"<<rd_.com_.pos(0)<<"\t"<<rd_.link_[Right_Foot].xipos(0) << "\t" << rd_.link_[Left_Foot].xipos(0)<<std::endl;
 
+
+         /*   if(wkc_.walking_tick == 1)
+            {
+                for(int i = 0; i < 3; i++)
+                {
+                    for(int j = 0; j < 3; j++)
+                    {
+                        file[1] << wkc_.Ag_waist(i, j)<<"\t";
+                    }
+                }
+
+         /*       
+                for(int i = 0; i < 3; i++)
+                {
+                    file[1] << wkc_.Ag_armL(i, 1)<<"\t"<< wkc_.Ag_armR(i, 1)<<"\t";
+                }
+
+                file[1] << std::endl;
+            }*/
+       file[1] << wkc_.H_leg1(0)<<"\t"<<wkc_.H_leg1(1)<<"\t"<<wkc_.H_leg1(2)<<std::endl;
+         
+        
                 t[1] = std::chrono::high_resolution_clock::now();
                 e_s[0] = t[0] - t[1];
             }
