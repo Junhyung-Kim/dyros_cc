@@ -21,6 +21,34 @@ CustomController::CustomController(DataContainer &dc, RobotData &rd) : dc_(dc), 
     joint_state_msg.position.resize(MODEL_DOF + 7);
     joint_state_msg.velocity.resize(MODEL_DOF + 6);
     joint_state_msg.effort.resize(MODEL_DOF + 6);
+/*
+        if((shmid = shmget((key_t)KEY_NUM, MEM_SIZE, IPC_CREAT| IPC_EXCL | 0666)) == -1) 
+        {
+            printf("There was shared memory.");
+            ROS_INFO("There was shared memory.");
+
+            shmid = shmget((key_t)KEY_NUM, MEM_SIZE, IPC_CREAT| 0666);
+            
+            if(shmid == -1)
+            {
+                perror("Shared memory create fail");
+                ROS_INFO("Shared memory create fail");
+                //return 1;
+            }
+            else
+            {
+                perror("Shared memory create");
+                ROS_INFO("Shared memory create");
+            //   SharedMemoryFree();
+            //   shmid = shmget((key_t)KEY_NUM, MEM_SIZE, IPC_CREAT| 0666);
+                
+            //   if(shmid == -1)
+            //   {
+            //       perror("Shared memory create fail");
+            //       return 1;
+            //   }
+            }
+        }*/
 }
 
 Eigen::VectorQd CustomController::getControl()

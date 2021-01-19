@@ -42,6 +42,8 @@ public:
     Eigen::Vector3d xipos_prev;
     Eigen::MatrixXd foot_stepc;
     Eigen::VectorQd torque_prev;
+    std::array<double, MODEL_DOF> q_elmo_;
+    int shmid;
     int contactModec;
     int walking_tickc;
     bool phaseChangec;
