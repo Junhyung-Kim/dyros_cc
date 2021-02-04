@@ -563,8 +563,11 @@ void CustomController::computePlanner()
 
                 file[1] << std::endl;
             }*/
-       file[1] << wkc_.H_leg1(0)<<"\t"<<wkc_.H_leg1(1)<<"\t"<<wkc_.H_leg1(2)<<std::endl;
-         
+    //   file[1] << wkc_.H_leg1(0)<<"\t"<<wkc_.H_leg1(1)<<"\t"<<wkc_.H_leg1(2)<<std::endl;
+
+  //  file[1] << wkc_.PELV_trajectory_float.translation()(0) << "\t"   << wkc_.PELV_trajectory_float.translation()(1) << "\t" << wkc_.PELV_trajectory_float.translation()(2) << "\t" << wkc_.RF_trajectory_float.translation()(0) << "\t" <<  wkc_.RF_trajectory_float.translation()(1) << "\t"<<  wkc_.RF_trajectory_float.translation()(2) << "\t"  <<  wkc_.LF_trajectory_float.translation()(0) << "\t"<<wkc_.LF_trajectory_float.translation()(1)  << "\t"<<wkc_.LF_trajectory_float.translation()(2)  << "\t" << wkc_.H_leg1(0)<<"\t"<<wkc_.H_leg1(1)<<"\t"<<wkc_.H_leg1(2)<<"\t"<<wkc_.lipm_w<<std::endl;               
+
+      file[1] << wkc_.com_refdx(wkc_.walking_tick) << "\t"   << wkc_.com_refdy(wkc_.walking_tick) << "\t" << wkc_.PELV_trajectory_float.translation()(2) << "\t" << wkc_.RFD_trajectory_float.translation()(0) << "\t" <<  wkc_.RFD_trajectory_float.translation()(1) << "\t"<<  wkc_.RFD_trajectory_float.translation()(2) << "\t"  <<  wkc_.LF_trajectory_float.translation()(0) << "\t"<<wkc_.LF_trajectory_float.translation()(1)  << "\t"<<wkc_.LF_trajectory_float.translation()(2)  << "\t" << wkc_.H_leg1(0)<<"\t"<<wkc_.H_leg1(1)<<"\t"<<wkc_.H_leg1(2)<<"\t"<<wkc_.lipm_w<<std::endl;               
         
                 t[1] = std::chrono::high_resolution_clock::now();
                 e_s[0] = t[0] - t[1];
